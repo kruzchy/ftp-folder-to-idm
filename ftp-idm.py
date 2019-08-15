@@ -3,11 +3,8 @@ from bs4 import BeautifulSoup
 from urllib.parse import unquote
 from pathlib import Path
 import os
-from fake_useragent import UserAgent
 import keyring
 
-ua = UserAgent()
-headers_t = {'user-agent': ua.random}
 username = 'focus16gfx'
 password = keyring.get_password('usb', username)
 rel_path = Path()
@@ -42,7 +39,7 @@ def add_idm_cmd(file_name, file_link, rel_path):
 def each_folder(fd_name, fd_link):
     global rel_path
     rel_path = rel_path / unquote(fd_name)
-    r = requests.get(fd_link, headers=headers_t)
+    r = requests.get(fd_link)
     # print(r.text)
     soup = BeautifulSoup(r.text, 'lxml')
     list_of_all_names = get_list_names(soup)
