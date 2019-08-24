@@ -4,31 +4,41 @@ from urllib.parse import unquote
 from pathlib import Path
 import os
 import sys
+import keyring
 
 username = ''
 password = ''
 rel_path = Path()
 default_local_path = Path()
 
-settings_text = """NOTE: Make sure you only edit the default text. Leave the rest unedited. Leave the default path field unedited to set Desktop as the default path.
+settings_text = """NOTE: Make sure you edit only the default text. Leave the rest unedited. Leave the default path field unedited to set Desktop as the default path.
 
 Username: your_username_here
 Password: your_password_here
 Default Download Path: default
-"""
+**"""
 try:
     with open('settings.txt', 'r') as fp:
         s = fp.read()
-        username = s.split('Username: ')[1].split('\n')[0]
-        password = s.split('Password: ')[1].split('\n')[0]
-        default_local_path = Path(s.split('Default Download Path: ')[1].split('\n')[0].replace('\\', '\\\\'))
-        if default_local_path.match('default'):
-            default_local_path = Path().home()/'Desktop'
-        else:
-            if not default_local_path.exists():
-                print(f'>>ERROR: Invalid default path, check again.')
-                os.system("pause")
-                sys.exit()
+        key_exists = keyring.get_password('sb', 'sb_username')
+        if key_exists and s == settings_text:
+            username = keyring.get_password('sb', 'sb_username')
+            password = keyring.get_password('sb', 'sb_password')
+        elif s != settings_text:
+            username = s.split('Username: ')[1].split('\n')[0]
+            password = s.split('Password: ')[1].split('\n')[0]
+            keyring.set_password('sb', 'sb_username', username)
+            keyring.set_password('sb', 'sb_password', password)
+            default_local_path = Path(s.split('Default Download Path: ')[1].split('\n')[0].replace('\\', '\\\\'))
+            if default_local_path.match('default'):
+                default_local_path = Path().home()/'Desktop'
+            else:
+                if not default_local_path.exists():
+                    print(f'>>ERROR: Invalid default path, check again.')
+                    os.system("pause")
+                    sys.exit()
+    with open('settings.txt', 'w') as fp:
+        fp.write(settings_text)
 
 
 except FileNotFoundError:
