@@ -5,6 +5,8 @@ from pathlib import Path
 import os
 import sys
 import keyring
+from keyrings.alt import Windows
+keyring.set_keyring(Windows.RegistryKeyring())
 
 username = ''
 password = ''
