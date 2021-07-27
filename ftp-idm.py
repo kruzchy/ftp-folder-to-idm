@@ -5,7 +5,7 @@ from pathlib import Path
 import os
 import keyring
 
-username = 'focus16gfx'
+username = ''
 password = keyring.get_password('usb', username)
 rel_path = Path()
 default_local_path = Path().home()/'Desktop'
